@@ -3,9 +3,9 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline'
 
 const navigation = [
-  { name: 'Pet Area', href: '#', current: false },
-  { name: 'Donations', href: '#', current: false },
-  { name: 'Blog', href: '#', current: false },
+  { name: 'Pet Area', href: '/pets', current: false },
+  { name: 'Donations', href: '/donations', current: false },
+  { name: 'Blog', href: '/blog', current: false },
 ]
 
 function classNames(...classes: string[]) {
@@ -33,7 +33,7 @@ export function Navbar() {
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">
-                  <a href='' className='bg-zinc-900 text-orange-500 rounded-md px-3 py-2 text-sm font-medium'>MyPet</a>                
+                  <a href='/' className='bg-zinc-900 text-orange-500 rounded-md px-3 py-2 text-sm font-medium'>MyPet</a>                
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
@@ -41,7 +41,7 @@ export function Navbar() {
                       <a
                         key={item.name}
                         href={item.href}
-                        className='text-zinc-300 hover:bg-zinc-700 hover:text-orange-500 rounded-md px-3 py-2 text-sm font-medium'            
+                        className='text-zinc-300 hover:text-orange-500 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-300'            
                         aria-current={item.current ? 'page' : undefined}
                       >
                         {item.name}
@@ -53,7 +53,7 @@ export function Navbar() {
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <button
                   type="button"
-                  className="relative rounded-full bg-gray-800 p-1 text-zinc-400 hover:text-orange-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 focus:ring-offset-gray-800"
+                  className="relative rounded-full p-1 text-zinc-400 hover:text-orange-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 focus:ring-offset-gray-800"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
@@ -63,10 +63,10 @@ export function Navbar() {
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
                   <div>
-                    <Menu.Button className="relative flex rounded-full bg-gray-800 text-zinc-400 hover:text-orange-500 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 focus:ring-offset-gray-800">
+                    <Menu.Button className="relative flex p-1 rounded-full text-zinc-400 hover:text-orange-500 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 focus:ring-offset-gray-800">
                       <span className="absolute -inset-1.5" />
                       <span className="sr-only">Open user menu</span>
-                      <UserCircleIcon className="block h-6 w-6"/>
+                      <UserCircleIcon className="h-6 w-6"/>
 
                     </Menu.Button>
                   </div>
@@ -81,24 +81,20 @@ export function Navbar() {
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-zinc-700 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(active ? 'text-zinc-100' : '', 'block px-4 py-2 text-sm text-zinc-200')}
-                          >
-                            Your Profile
-                          </a>
-                        )}
+                        <a
+                          href="#"
+                          className='block px-4 py-2 text-sm text-zinc-200 hover:text-white'
+                        >
+                          Minha conta
+                        </a>
                       </Menu.Item>
                       <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(active ? 'text-zinc-100' : '', 'block px-4 py-2 text-sm text-zinc-200')}
-                          >
-                            Sign out
-                          </a>
-                        )}
+                        <a
+                          href="#"
+                          className='block px-4 py-2 text-sm text-orange-500 hover:text-orange-400'
+                        >
+                          Sair
+                        </a>
                       </Menu.Item>
                     </Menu.Items>
                   </Transition>
