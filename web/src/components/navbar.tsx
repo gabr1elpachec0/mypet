@@ -3,8 +3,8 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline'
 
 const navigation = [
-  { name: 'Pet Area', href: '/pets', current: false },
-  { name: 'Donations', href: '/donations', current: false },
+  { name: 'Seus pets', href: '/pets', current: false },
+  { name: 'Doações', href: '/donations', current: false },
   { name: 'Blog', href: '/blog', current: false },
 ]
 
@@ -85,7 +85,7 @@ export function Navbar() {
                           href="#"
                           className='block px-4 py-2 text-sm text-zinc-200 hover:text-white'
                         >
-                          Minha conta
+                          Login
                         </a>
                       </Menu.Item>
                       <Menu.Item>
@@ -93,7 +93,7 @@ export function Navbar() {
                           href="#"
                           className='block px-4 py-2 text-sm text-orange-500 hover:text-orange-400'
                         >
-                          Sair
+                          Cadastre-se
                         </a>
                       </Menu.Item>
                     </Menu.Items>
