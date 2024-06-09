@@ -1,22 +1,14 @@
 import { FastifyInstance } from "fastify"
-import { z } from "zod"
-import { prisma } from "../../lib/prisma"
-
 import bcrypt from 'bcryptjs'
+import { prisma } from "../../lib/prisma"
+import { userParam, userBody } from "./utils"
 
 export async function userRoutes(app: FastifyInstance) {
-  // User
-  app.post('/user', async (request, reply) => {
-    const createUserBody = z.object({
-      name: z.string(),
-      email: z.string().email(),
-      password: z.string()
-    })
+  app.post('/users', async (request, reply) => {
 
-    const { name, email, password } = createUserBody.parse(request.body)
+    const { name, email, password } = userBody.parse(request.body)
 
     const hash = await bcrypt.hash(password, 10)
-    // console.log(hash)
 
     try {
       await prisma.user.create({
@@ -33,12 +25,18 @@ export async function userRoutes(app: FastifyInstance) {
     }
   })
 
-  app.get('/user/:userId', async (request, reply) => {
-    const findPetsByUserIdParams = z.object({
-      userId: z.string().uuid()
-    })
+  app.get('/users/:userId', async (request, reply) => {
+    const { userId } = userParam.parse(request.params)
 
-    const { userId } = findPetsByUserIdParams.parse(request.params)
-    console.log(userId)
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId
+        }
+      })
+      return reply.status(200).send({ user })
+    } catch (e) {
+      console.error(e)
+    }
   })
 }

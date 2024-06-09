@@ -1,16 +1,12 @@
 import { FastifyInstance } from "fastify";
-import { prisma } from "../../lib/prisma";
 import { z } from "zod";
+import { prisma } from "../../lib/prisma";
+import { petBody, userParam } from "./utils";
 
 export async function petsRoutes(app: FastifyInstance) {
   app.get('/pets/:userId', async (request, reply) => {
-    const findPetsByUserIdParams = z.object({
-      userId: z.string().uuid()
-    })
 
-    const { userId } = findPetsByUserIdParams.parse(request.params)
-
-    // id do usuário precisa ser o do que está logado na plataforma (questão de segurança)
+    const { userId } = userParam.parse(request.params)
 
     try {
       const pets = await prisma.pet.findMany({
@@ -19,33 +15,16 @@ export async function petsRoutes(app: FastifyInstance) {
         }
       })
 
-      return pets
+      return reply.status(200).send({ pets })
     } catch(e) {
       console.error(e)
     }
   })
 
-  app.get('/pets', async (req) => {
-    const findAllPets = await prisma.pet.findMany()
+  app.post('/pets/:userId', async (request, reply) => {
 
-    return findAllPets
-  })
-
-  app.post('/pet/:userId', async (request, reply) => {
-    const createPetsParams = z.object({
-      userId: z.string().uuid()
-    })
-
-    const createPetsBody = z.object({
-      name: z.string(),
-      birthDate: z.string(),
-      breed: z.string(),
-      size: z.string(),
-      gender: z.string(),
-    })
-
-    const { userId } = createPetsParams.parse(request.params)
-    const { name, birthDate, breed, size, gender } = createPetsBody.parse(request.body)
+    const { userId } = userParam.parse(request.params)
+    const { name, birthDate, breed, size, gender } = petBody.parse(request.body)
 
     try {
       const findUserById = await prisma.user.findUnique({
@@ -65,7 +44,7 @@ export async function petsRoutes(app: FastifyInstance) {
         } 
       })
 
-      return reply.status(201).send({ message: `Pet de ${findUserById?.name} criado(a) com sucesso!` })
+      return reply.status(201).send({ message: `Pet de ${findUserById?.name} adicionado(a) com sucesso!` })
     } catch (e) {
       console.error(e)
     }
