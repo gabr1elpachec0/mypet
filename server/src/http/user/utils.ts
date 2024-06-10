@@ -9,3 +9,8 @@ export const userBody = z.object({
 export const userParam = z.object({
   userId: z.string().uuid()
 })
+
+export const userLogin = z.object({
+  email: z.string().email(),
+  password: z.string()
+})

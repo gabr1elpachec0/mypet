@@ -1,10 +1,11 @@
 import { FastifyInstance } from "fastify"
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import { prisma } from "../../lib/prisma"
-import { userParam, userBody } from "./utils"
+import { userParam, userBody, userLogin } from "./utils"
 
 export async function userRoutes(app: FastifyInstance) {
-  app.post('/users', async (request, reply) => {
+  app.post('/users/register', async (request, reply) => {
 
     const { name, email, password } = userBody.parse(request.body)
 
@@ -15,9 +16,10 @@ export async function userRoutes(app: FastifyInstance) {
         data: {
           name,
           email,
-          password: hash
+          password: hash,     
+          type: 'USER'      
         }
-      })
+      })      
 
       return reply.status(201).send({ message: 'Usuário criado com sucesso!' })
     } catch (e) {
@@ -39,4 +41,46 @@ export async function userRoutes(app: FastifyInstance) {
       console.error(e)
     }
   })
+
+  app.post('/users/login', async (request, reply) => {
+    const { email, password } = userLogin.parse(request.body)
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          email: email,
+        }
+      })
+
+      if (!user) {
+        return reply.status(404).send({ error: 'Usuário não encontrado.' })
+      }
+
+      const passwordMatch = await bcrypt.compare(password, user.password)
+
+      if (!passwordMatch) {
+        return reply.status(404).send({ error: 'Credenciais inválidas.' })
+      }
+
+      const token = generateJWTToken(user.id, 'USER')
+
+      return reply.status(200).send({ message: 'Login realizado com sucesso!', token })
+
+    } catch (error) {
+      console.error(error)
+    }
+  })
+}
+
+function generateJWTToken(userId, userType) {
+  const payload = {
+    userId,
+    userType
+  }
+
+  const secret = process.env.SECRET
+
+  const token = jwt.sign(payload, secret, { expiresIn: '1h' })
+
+  return token
 }
