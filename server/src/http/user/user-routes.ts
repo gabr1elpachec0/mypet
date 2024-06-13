@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify"
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
 import { prisma } from "../../lib/prisma"
+import { generateJWTToken } from "../../utils/jwt"
 import { userParam, userBody, userLogin } from "./utils"
 
 export async function userRoutes(app: FastifyInstance) {
@@ -36,6 +36,11 @@ export async function userRoutes(app: FastifyInstance) {
           id: userId
         }
       })
+
+      if (!user) {
+        return reply.status(404).send({ error: 'Usuário não encontrado.' })
+      }
+
       return reply.status(200).send({ user })
     } catch (e) {
       console.error(e)
@@ -70,17 +75,4 @@ export async function userRoutes(app: FastifyInstance) {
       console.error(error)
     }
   })
-}
-
-function generateJWTToken(userId, userType) {
-  const payload = {
-    userId,
-    userType
-  }
-
-  const secret = process.env.SECRET
-
-  const token = jwt.sign(payload, secret, { expiresIn: '1h' })
-
-  return token
 }
