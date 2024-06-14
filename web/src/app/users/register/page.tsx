@@ -15,8 +15,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { api } from "@/lib/api"
 
-
-
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Esse campo precisa ter pelo menos 2 caracteres.",
@@ -30,8 +28,8 @@ const formSchema = z.object({
 })
 
 export default function Register() {
-  const router = useRouter()
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: '',
@@ -41,14 +39,14 @@ export default function Register() {
     },
   })
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await api.post('/users/register', {
-        name: data.username,
-        email: data.email,
-        password: data.password
+        name: values.username,
+        email: values.email,
+        password: values.password
       })
-      
+
       toast.success('Cadastro bem-sucedido!')
       router.push('/')
     } catch (error: any) {
@@ -67,12 +65,12 @@ export default function Register() {
           <CardTitle>Crie sua conta</CardTitle>
           <CardDescription>Cadastre-se para ter acesso aos serviços</CardDescription>
         </CardHeader>
-        <Form {...control}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent>
               <div className="grid w-full items-center gap-4">
                 <FormField
-                  control={control}
+                  control={form.control}
                   name="username"
                   render={({ field }) => (
                     <FormItem>
@@ -80,13 +78,13 @@ export default function Register() {
                       <FormControl>
                         <Input placeholder="Seu nome" {...field} />
                       </FormControl>
-                      {errors.username && <FormMessage>{errors.username.message}</FormMessage>}
+                      <FormMessage/>
                     </FormItem>
                   )}
                 />
 
                 <FormField
-                  control={control}
+                  control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
@@ -94,13 +92,13 @@ export default function Register() {
                       <FormControl>
                         <Input type="email" placeholder="Seu email" {...field} />
                       </FormControl>
-                      {errors.email && <FormMessage>{errors.email.message}</FormMessage>}
+                      <FormMessage/>
                     </FormItem>
                   )}
                 />
 
                 <FormField
-                  control={control}
+                  control={form.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
@@ -108,13 +106,13 @@ export default function Register() {
                       <FormControl>
                         <Input type="password" placeholder="Sua senha" {...field} />
                       </FormControl>
-                      {errors.password && <FormMessage>{errors.password.message}</FormMessage>}
+                      <FormMessage/>
                     </FormItem>
                   )}
                 />
 
                 <FormField
-                  control={control}
+                  control={form.control}
                   name="passwordVerify"
                   render={({ field }) => (
                     <FormItem>
@@ -122,22 +120,22 @@ export default function Register() {
                       <FormControl>
                         <Input type="password" placeholder="Confirme sua senha" {...field} />
                       </FormControl>
-                      {errors.passwordVerify && <FormMessage>{errors.passwordVerify.message}</FormMessage>}
+                      <FormMessage/>
                     </FormItem>
                   )}
                 />
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <p className="text-sm">Já possui conta? <Button variant={'link'} className="p-0"><Link href={'/users/login'}>Entre aqui</Link></Button></p>
+              <p className="text-xs">Já possui conta? <Button variant={'link'} className="p-0 text-xs"><Link href={'/users/login'}>Entre aqui</Link></Button></p>
               <Button
                 type="submit"
                 className="flex gap-2 items-center"
               >
                 Confirmar
                 <CheckIcon className="w-4 h-4" />
-              </Button>              
-            </CardFooter>            
+              </Button>
+            </CardFooter>
           </form>
         </Form>
       </Card>

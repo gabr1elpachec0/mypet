@@ -7,41 +7,41 @@ export default function Navbar() {
   return (
     <header className="flex flex-1 justify-between items-center">
       <div className="flex gap-2">
-        <Button variant={'link'}>
-          <Link href={'/'}>
+        <Link href={'/'}>
+          <Button variant={'link'}>
             MyPet
-          </Link>
-        </Button>
-        <Button variant={'ghost'}>
-          <Link href={'/pets'}>
-            Meus Pets
-          </Link>
-        </Button>
-        <Button variant={'ghost'}>
-          <Link href={'/'}>
+          </Button>
+        </Link>
+        <Link href={'/pets'}>
+          <Button variant={'ghost'}>
+            Meus pets
+          </Button>
+        </Link>
+        <Link href={'/blog'}>
+          <Button variant={'ghost'}>
             Blog
-          </Link>
-        </Button>
-        <Button variant={'ghost'}>
-          <Link href={'/'}>
+          </Button>
+        </Link>
+        <Link href={'/donations'}>
+          <Button variant={'ghost'}>
             Doações
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
       <div className="flex gap-2">
         <ModeToggle />
-        <Button variant={'outline'} className="flex gap-2 items-center">
-          <Link href={'/login'}>
+        <Link href={'/users/login'}>
+          <Button variant={'outline'} className="flex gap-2 items-center">
             Entrar
-          </Link>
-          <LogIn className="w-4 h-4" />
-        </Button>
-        <Button variant={'default'} className="flex gap-2 items-center">
-          <Link href={'/users/register'}>
+            <LogIn className="w-4 h-4" />
+          </Button>
+        </Link>
+        <Link href={'/users/register'}>
+          <Button variant={'default'} className="flex gap-2 items-center">
             Criar Conta
-          </Link>
-          <UserPlus2Icon className="w-4 h-4" />
-        </Button>
+            <UserPlus2Icon className="w-4 h-4" />
+          </Button>
+        </Link>
       </div>
     </header>
   )
