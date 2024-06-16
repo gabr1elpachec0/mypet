@@ -1,9 +1,11 @@
 "use client"
 
+import { useEffect, useState } from "react";
 import { CheckIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
+import Cookies from 'js-cookie'
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -13,12 +15,14 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@/lib/api";
 
+
 const formSchema= z.object({
   email: z.string().email({ message: 'Endereço de email inválido.' }),
   password: z.string().nonempty({ message: 'Esse campo precisa ser preenchido' })
 })
 
 export default function Login() {
+  const [token, setToken] = useState('')
   const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -36,6 +40,8 @@ export default function Login() {
       })
       
       toast.success('Login bem-sucedido')
+
+      Cookies.set('token', login.data.token)
       router.push('/')
     } catch (error: any) {
       toast.error('Usuário não encontrado. Tente novamente.')

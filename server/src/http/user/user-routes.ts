@@ -87,26 +87,12 @@ export async function userRoutes(app: FastifyInstance) {
 
       const token = generateJWTToken(user.id, 'USER')
 
-      reply.setCookie('token', token, {
-        path: '/',
-        httpOnly: true,
-        secure: true,
-        maxAge: 60 * 60 * 24 * 7
-      })
-
-      return reply.send({ message: 'Login bem-sucedido!' })
+      return reply.send({ message: 'Login bem-sucedido!', token })
     } catch (error) {
       console.error(error)
     }
   })
 
   app.post('/users/logout', (request, reply) => {
-    const token = request.cookies.token
-
-    if (!token) {
-      return reply.status(401).send({ error: 'Token não encontrado' })
-    }
-
-    return reply.clearCookie('token').send({ message: 'Logout bem-sucedido' })    
   })
 }

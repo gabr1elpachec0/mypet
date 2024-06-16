@@ -2,18 +2,13 @@ import { FastifyInstance } from "fastify";
 import jwt from 'jsonwebtoken'
 import { prisma } from "../../lib/prisma";
 import { petBody } from "./utils";
-import * as fastifyCookie from 'fastify-cookie'
+import { z } from "zod";
 
 export async function petsRoutes(app: FastifyInstance) {
-  app.get('/pets', async (request, reply) => {
-    const token = request.cookies.token
-
-    if (!token) {
-      return reply.status(401).send({ error: 'Token não encontrado!' })
-    }
-
-    const decoded = jwt.verify(token, process.env.SECRET)
-    const userId = decoded.userId
+  app.get('/pets/:userId', async (request, reply) => {
+    const { userId } = z.object({ 
+      userId: z.string() 
+    }).parse(request.params)
 
     try {
       const pets = await prisma.pet.findMany({
@@ -28,16 +23,11 @@ export async function petsRoutes(app: FastifyInstance) {
     }
   })
 
-  app.post('/pets', async (request, reply) => {
+  app.post('/pets/:userId', async (request, reply) => {
     const { name, birthDate, breed, size, gender } = petBody.parse(request.body)
-    const token = request.cookies.token
-
-    if (!token) {
-      return reply.status(401).send({ error: 'Token não encontrado!' })
-    }
-
-    const decoded = jwt.verify(token, process.env.SECRET)    
-    const userId = decoded.userId
+    const { userId } = z.object({ 
+      userId: z.string() 
+    }).parse(request.params)
 
     try {
       const findUserById = await prisma.user.findUnique({
