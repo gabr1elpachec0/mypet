@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from "../../lib/prisma"
 import { generateJWTToken } from "../../utils/jwt"
-import { userParam, userBody, userLogin } from "./utils"
+import fastifyCookie from 'fastify-cookie'
 
 export async function userRoutes(app: FastifyInstance) {
   app.post('/users/register', async (request, reply) => {
@@ -90,7 +90,7 @@ export async function userRoutes(app: FastifyInstance) {
       reply.setCookie('token', token, {
         path: '/',
         httpOnly: true,
-        sameSite: 'strict',
+        secure: true,
         maxAge: 60 * 60 * 24 * 7
       })
 
@@ -98,5 +98,15 @@ export async function userRoutes(app: FastifyInstance) {
     } catch (error) {
       console.error(error)
     }
+  })
+
+  app.post('/users/logout', (request, reply) => {
+    const token = request.cookies.token
+
+    if (!token) {
+      return reply.status(401).send({ error: 'Token não encontrado' })
+    }
+
+    return reply.clearCookie('token').send({ message: 'Logout bem-sucedido' })    
   })
 }

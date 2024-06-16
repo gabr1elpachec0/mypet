@@ -7,7 +7,3 @@ export const petBody = z.object({
   size: z.string(),
   gender: z.string(),
 })
-
-export const userParam = z.object({
-  userId: z.string().uuid()
-})
