@@ -48,7 +48,7 @@ export default function Register() {
       })
 
       toast.success('Cadastro bem-sucedido!')
-      router.push('/')
+      router.push('/users/login')
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         if (error.response && error.response.status === 409) {
@@ -127,7 +127,7 @@ export default function Register() {
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <p className="text-xs">Já possui conta? <Button variant={'link'} className="p-0 text-xs"><Link href={'/users/login'}>Entre aqui</Link></Button></p>
+              <p className="text-xs"> Já possui conta? <Button variant={'link'} className="p-0 text-xs"><Link href={'/users/login'}>Entre aqui</Link></Button></p>
               <Button
                 type="submit"
                 className="flex gap-2 items-center"

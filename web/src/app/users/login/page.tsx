@@ -30,11 +30,11 @@ export default function Login() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await api.post('/users/login', {
+      const login = await api.post('/users/login', {
         email: values.email,
         password: values.password
       })
-
+      
       toast.success('Login bem-sucedido')
       router.push('/')
     } catch (error: any) {
