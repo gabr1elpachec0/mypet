@@ -3,15 +3,20 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from "../../lib/prisma"
 import { generateJWTToken } from "../../utils/jwt"
-import fastifyCookie from 'fastify-cookie'
 
 export async function userRoutes(app: FastifyInstance) {
+  enum UserType {
+    USER = 'USER',
+    VET = 'VET'
+  }
+
   app.post('/users/register', async (request, reply) => {
 
-    const { name, email, password } = z.object({
+    const { name, email, password, type } = z.object({
       name: z.string(),
       email: z.string().email(),
-      password: z.string()
+      password: z.string(),
+      type: z.enum([UserType.USER, UserType.VET])
     }).parse(request.body)
 
     const hash = await bcrypt.hash(password, 10)
@@ -23,37 +28,37 @@ export async function userRoutes(app: FastifyInstance) {
     })
 
     if (user) {
-      return reply.status(409).send({ error: 'Usuário já existe!' })
+      return reply.status(409).send({ error: 'User already exists.' })
     }
 
     try {
-      await prisma.user.create({
+      const user = await prisma.user.create({
         data: {
           name,
           email,
           password: hash,
-          type: 'USER'
+          type
         }
       })
 
-      return reply.status(201).send({ message: 'Usuário criado com sucesso!' })
+      return reply.status(201).send({ message: 'User created successfully.', userId: user.id })
     } catch (e) {
       console.error(e)
     }
   })
 
-  app.get('/users/:userId', async (request, reply) => {
-    const { userId } = z.object({ userId: z.string().uuid() }).parse(request.params)
+  app.get('/users/:id', async (request, reply) => {
+    const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
 
     try {
       const user = await prisma.user.findUnique({
         where: {
-          id: userId
+          id
         }
       })
 
       if (!user) {
-        return reply.status(404).send({ error: 'Usuário não encontrado.' })
+        return reply.status(404).send({ error: 'User not found.' })
       }
 
       return reply.status(200).send({ user })
@@ -71,28 +76,91 @@ export async function userRoutes(app: FastifyInstance) {
     try {
       const user = await prisma.user.findUnique({
         where: {
-          email: email,
+          email,
         }
       })
 
       if (!user) {
-        return reply.status(404).send({ error: 'Usuário não encontrado.' })
+        return reply.status(404).send({ error: 'User not found. Please create an account.' })
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password)
 
       if (!passwordMatch) {
-        return reply.status(404).send({ error: 'Credenciais inválidas.' })
+        return reply.status(401).send({ error: 'Invalid credentials.' })
       }
 
       const token = generateJWTToken(user.id, 'USER')
 
-      return reply.send({ message: 'Login bem-sucedido!', token })
+      return reply.send({ message: 'User has logged in successfully.', token })
     } catch (error) {
       console.error(error)
     }
   })
 
-  app.post('/users/logout', (request, reply) => {
+  app.put("/users/:id", async (request, reply) => {
+    const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
+    const { name, email, password, type } = z.object({
+      name: z.string(),
+      email: z.string().email(),
+      password: z.string(),
+      type: z.enum([UserType.USER, UserType.VET])
+    }).parse(request.body)
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id
+        }
+      })
+
+      if (!user) {
+        return reply.status(404).send({ message: "User not found." })
+      }
+
+      const hash = await bcrypt.hash(password, 10)
+
+      await prisma.user.update({
+        where: {
+          id
+        },
+        data: {
+          name,
+          email,
+          password: hash,
+          type
+        }
+      })
+
+      return reply.status(200).send({ message: "User updated successfully." })
+    } catch (error) {
+      console.error(error)
+    }
+  })
+
+  app.delete("/users/:id", async (request, reply) => {
+    const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id
+        }
+      })
+
+      if (!user) {
+        return reply.status(404).send({ message: "User not found." })
+      }
+
+      await prisma.user.delete({
+        where: {
+          id
+        }
+      })
+
+      return reply.status(200).send({ message: "User deleted successfully." })
+    } catch (error) {
+      console.error(error)
+    }
   })
 }
