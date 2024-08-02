@@ -27,7 +27,7 @@ export async function petsRoutes(app: FastifyInstance) {
         return reply.status(404).send({ error: 'User not found.' })
       }
 
-      await prisma.pet.create({
+      const pet = await prisma.pet.create({
         data: {
           userId,
           name,
@@ -38,7 +38,7 @@ export async function petsRoutes(app: FastifyInstance) {
         } 
       })
 
-      return reply.status(201).send({ message: 'Pet was created successfully.' })
+      return reply.status(201).send({ message: 'Pet was created successfully.', petId: pet.id })
     } catch (e) {
       console.error(e)
     }
@@ -89,7 +89,7 @@ export async function petsRoutes(app: FastifyInstance) {
       })
   
       if (!pet) {
-        return reply.status(404).send({ message: 'Pet not found' })
+        return reply.status(404).send({ message: 'Pet not found.' })
       }
   
       return reply.status(200).send({ pet })
@@ -137,6 +137,34 @@ export async function petsRoutes(app: FastifyInstance) {
 
       return reply.status(200).send({ message: `${pet.name} was updated succesfully.` })
     } catch(e) {
+      console.error(e)
+    }
+  })
+
+  app.delete('/pets/:petId', async (request, reply) => {
+    const { petId } = z.object({
+      petId: z.string().uuid()
+    }).parse(request.params)
+
+    try {
+      const pet = await prisma.pet.findUnique({
+        where: {
+          id: petId
+        }
+      })
+  
+      if (!pet) {
+        return reply.status(404).send({ message: 'Pet not found.' })
+      }
+  
+      await prisma.pet.delete({
+        where: {
+          id: petId
+        }
+      })
+  
+      return reply.status(200).send({ message: `${pet.name} was deleted successfully.` })
+    } catch (e) {
       console.error(e)
     }
   })
