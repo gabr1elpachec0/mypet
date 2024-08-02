@@ -1,6 +1,6 @@
-## an web app to control your pet's health 🐕
+## An web app to control your pet's health 🐕
 
-### technologies
+### Technologies 💻
 
 - ``React``
 - ``Typescript``
