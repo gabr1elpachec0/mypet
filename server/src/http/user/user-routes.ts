@@ -10,8 +10,7 @@ export async function userRoutes(app: FastifyInstance) {
     VET = 'VET'
   }
 
-  app.post('/users/register', async (request, reply) => {
-
+  app.post('/users/signup', async (request, reply) => {
     const { name, email, password, type } = z.object({
       name: z.string(),
       email: z.string().email(),
@@ -47,13 +46,13 @@ export async function userRoutes(app: FastifyInstance) {
     }
   })
 
-  app.get('/users/:id', async (request, reply) => {
-    const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
+  app.get('/users/:userId', async (request, reply) => {
+    const { userId } = z.object({ userId: z.string().uuid() }).parse(request.params)
 
     try {
       const user = await prisma.user.findUnique({
         where: {
-          id
+          id: userId
         }
       })
 
@@ -67,7 +66,7 @@ export async function userRoutes(app: FastifyInstance) {
     }
   })
 
-  app.post('/users/login', async (request, reply) => {
+  app.post('/users/authenticate', async (request, reply) => {
     const { email, password } = z.object({
       email: z.string().email(),
       password: z.string()
@@ -98,8 +97,8 @@ export async function userRoutes(app: FastifyInstance) {
     }
   })
 
-  app.put("/users/:id", async (request, reply) => {
-    const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
+  app.put("/users/:userId", async (request, reply) => {
+    const { userId } = z.object({ userId: z.string().uuid() }).parse(request.params)
     const { name, email, password, type } = z.object({
       name: z.string(),
       email: z.string().email(),
@@ -110,7 +109,7 @@ export async function userRoutes(app: FastifyInstance) {
     try {
       const user = await prisma.user.findUnique({
         where: {
-          id
+          id: userId
         }
       })
 
@@ -122,7 +121,7 @@ export async function userRoutes(app: FastifyInstance) {
 
       await prisma.user.update({
         where: {
-          id
+          id: userId
         },
         data: {
           name,
@@ -138,13 +137,13 @@ export async function userRoutes(app: FastifyInstance) {
     }
   })
 
-  app.delete("/users/:id", async (request, reply) => {
-    const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
+  app.delete("/users/:userId", async (request, reply) => {
+    const { userId } = z.object({ userId: z.string().uuid() }).parse(request.params)
 
     try {
       const user = await prisma.user.findUnique({
         where: {
-          id
+          id: userId
         }
       })
 
@@ -154,7 +153,7 @@ export async function userRoutes(app: FastifyInstance) {
 
       await prisma.user.delete({
         where: {
-          id
+          id: userId
         }
       })
 
