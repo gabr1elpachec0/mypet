@@ -92,8 +92,8 @@ export async function userRoutes(app: FastifyInstance) {
       const token = generateJWTToken(user.id, 'USER')
 
       return reply.send({ message: 'User has logged in successfully.', token })
-    } catch (error) {
-      console.error(error)
+    } catch (e) {
+      console.error(e)
     }
   })
 
@@ -132,8 +132,8 @@ export async function userRoutes(app: FastifyInstance) {
       })
 
       return reply.status(200).send({ message: "User updated successfully." })
-    } catch (error) {
-      console.error(error)
+    } catch (e) {
+      console.error(e)
     }
   })
 
@@ -158,8 +158,8 @@ export async function userRoutes(app: FastifyInstance) {
       })
 
       return reply.status(200).send({ message: "User deleted successfully." })
-    } catch (error) {
-      console.error(error)
+    } catch (e) {
+      console.error(e)
     }
   })
 }

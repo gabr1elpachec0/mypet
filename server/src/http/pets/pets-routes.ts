@@ -67,7 +67,7 @@ export async function petsRoutes(app: FastifyInstance) {
       })
 
       if (pets.length > 0) {
-        return reply.status(200).send({ petsOwner: `${user.name}`, pets })
+        return reply.status(200).send({ tutor: `${user.name}`, pets })
       }
 
       return reply.status(200).send({ message: `${user.name} does not have any pets.` })
