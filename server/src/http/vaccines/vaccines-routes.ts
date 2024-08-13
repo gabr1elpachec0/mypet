@@ -34,4 +34,48 @@ export async function vaccinesRoutes(app: FastifyInstance) {
             console.error(e)
         }
     })
+
+    app.post('/pets/:petId/vaccines', async (request, reply) => {
+        const { petId } = z.object({
+            petId: z.string().uuid()
+        }).parse(request.params) 
+
+        const {
+            vaccineName,
+            vetName,
+            vaccineDate,
+            vaccineRepeatDate
+        } = z.object({
+            vaccineName: z.string(),
+            vetName: z.string(),
+            vaccineDate: z.string(),
+            vaccineRepeatDate: z.string()
+        }).parse(request.body)
+
+        try {
+            const pet = await prisma.pet.findUnique({
+                where: {
+                    id: petId
+                }
+            })
+
+            if (!pet) {
+                return reply.status(404).send({ message: 'Pet not found.' })
+            }
+
+            await prisma.vaccines.create({
+                data: {
+                    vaccineName,
+                    vetName,
+                    vaccineDate: new Date(vaccineDate),
+                    vaccineRepeatDate: new Date(vaccineRepeatDate),
+                    petId
+                }
+            })
+
+            return reply.status(201).send({ petName: pet.name, message: 'Vaccine registered successfully.' })
+        } catch (error) {
+            console.error(error)
+        }
+    })
 }
