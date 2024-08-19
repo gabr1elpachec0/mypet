@@ -10,6 +10,26 @@ export async function userRoutes(app: FastifyInstance) {
     VET = 'VET'
   }
 
+  app.get('/users/:userId', async (request, reply) => {
+    const { userId } = z.object({ userId: z.string().uuid() }).parse(request.params)
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId
+        }
+      })
+
+      if (!user) {
+        return reply.status(404).send({ error: 'User not found.' })
+      }
+
+      return reply.status(200).send({ user })
+    } catch (e) {
+      console.error(e)
+    }
+  })
+
   app.post('/users/signup', async (request, reply) => {
     const { name, email, password, type } = z.object({
       name: z.string(),
@@ -40,27 +60,7 @@ export async function userRoutes(app: FastifyInstance) {
         }
       })
 
-      return reply.status(201).send({ message: 'User created successfully.', userId: user.id })
-    } catch (e) {
-      console.error(e)
-    }
-  })
-
-  app.get('/users/:userId', async (request, reply) => {
-    const { userId } = z.object({ userId: z.string().uuid() }).parse(request.params)
-
-    try {
-      const user = await prisma.user.findUnique({
-        where: {
-          id: userId
-        }
-      })
-
-      if (!user) {
-        return reply.status(404).send({ error: 'User not found.' })
-      }
-
-      return reply.status(200).send({ user })
+      return reply.status(201).send({ userId: user.id })
     } catch (e) {
       console.error(e)
     }
@@ -91,7 +91,7 @@ export async function userRoutes(app: FastifyInstance) {
 
       const token = generateJWTToken(user.id, 'USER')
 
-      return reply.send({ message: 'User has logged in successfully.', token })
+      return reply.send({ token })
     } catch (e) {
       console.error(e)
     }

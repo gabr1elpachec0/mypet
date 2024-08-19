@@ -3,6 +3,60 @@ import { z } from "zod";
 import { prisma } from "../../lib/prisma";
 
 export async function petsRoutes(app: FastifyInstance) {
+  app.get('/users/:userId/pets', async (request, reply) => {
+    const { userId } = z.object({
+      userId: z.string()
+    }).parse(request.params)
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId
+        }
+      })
+
+      if (!user) {
+        return reply.status(404).send({ error: 'User not found.' })
+      }
+
+      const pets = await prisma.pet.findMany({
+        where: {
+          userId
+        }
+      })
+
+      if (pets.length > 0) {
+        return reply.status(200).send({ pets })
+      }
+
+      return reply.status(200).send({ message: `${user.name} does not have any pets.` })
+    } catch (e) {
+      console.error(e)
+    }
+  })
+
+  app.get('/pets/:petId', async (request, reply) => {
+    const { petId } = z.object({
+      petId: z.string().uuid()
+    }).parse(request.params)
+
+    try {
+      const pet = await prisma.pet.findUnique({
+        where: {
+          id: petId
+        }
+      })
+
+      if (!pet) {
+        return reply.status(404).send({ message: 'Pet not found.' })
+      }
+
+      return reply.status(200).send({ pet })
+    } catch (e) {
+      console.error(e)
+    }
+  })
+
   app.post('/users/:userId/pets', async (request, reply) => {
     const { name, birthDate, breed, size, gender } = z.object({
       name: z.string(),
@@ -12,8 +66,8 @@ export async function petsRoutes(app: FastifyInstance) {
       gender: z.string()
     }).parse(request.body)
 
-    const { userId } = z.object({ 
-      userId: z.string() 
+    const { userId } = z.object({
+      userId: z.string()
     }).parse(request.params)
 
     try {
@@ -35,64 +89,10 @@ export async function petsRoutes(app: FastifyInstance) {
           breed,
           size,
           gender,
-        } 
-      })
-
-      return reply.status(201).send({ message: 'Pet was created successfully.', petId: pet.id })
-    } catch (e) {
-      console.error(e)
-    }
-  })
-
-  app.get('/users/:userId/pets', async (request, reply) => {
-    const { userId } = z.object({ 
-      userId: z.string() 
-    }).parse(request.params)
-
-    try {
-      const user = await prisma.user.findUnique({
-        where: {
-          id: userId
         }
       })
 
-      if (!user) {
-        return reply.status(404).send({ error: 'User not found.' })
-      }
-
-      const pets = await prisma.pet.findMany({
-        where: {
-          userId
-        }
-      })
-
-      if (pets.length > 0) {
-        return reply.status(200).send({ tutor: `${user.name}`, pets })
-      }
-
-      return reply.status(200).send({ message: `${user.name} does not have any pets.` })
-    } catch(e) {
-      console.error(e)
-    }
-  })
-
-  app.get('/pets/:petId', async (request, reply) => {
-    const { petId } = z.object({
-      petId: z.string().uuid()
-    }).parse(request.params)
-
-    try {
-      const pet = await prisma.pet.findUnique({
-        where: {
-          id: petId
-        }
-      })
-  
-      if (!pet) {
-        return reply.status(404).send({ message: 'Pet not found.' })
-      }
-  
-      return reply.status(200).send({ pet })
+      return reply.status(201).send({ petId: pet.id })
     } catch (e) {
       console.error(e)
     }
@@ -135,8 +135,8 @@ export async function petsRoutes(app: FastifyInstance) {
         }
       })
 
-      return reply.status(200).send({ message: `${pet.name} was updated succesfully.` })
-    } catch(e) {
+      return reply.status(200).send({ message: 'Pet updated succesfully.' })
+    } catch (e) {
       console.error(e)
     }
   })
@@ -152,18 +152,18 @@ export async function petsRoutes(app: FastifyInstance) {
           id: petId
         }
       })
-  
+
       if (!pet) {
         return reply.status(404).send({ message: 'Pet not found.' })
       }
-  
+
       await prisma.pet.delete({
         where: {
           id: petId
         }
       })
-  
-      return reply.status(200).send({ message: `${pet.name} was deleted successfully.` })
+
+      return reply.status(200).send({ message: 'Pet deleted successfully.' })
     } catch (e) {
       console.error(e)
     }
