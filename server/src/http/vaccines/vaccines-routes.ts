@@ -47,6 +47,10 @@ export async function vaccinesRoutes(app: FastifyInstance) {
         }
       })
 
+      if (!vaccine) {
+        return reply.status(404).send({ message: 'Vaccine not found.' })
+      }
+
       return reply.status(200).send({ vaccine })
     } catch (error) {
       console.error(error)

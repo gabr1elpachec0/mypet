@@ -47,6 +47,10 @@ export async function medicinesRoutes(app: FastifyInstance) {
         }
       })
 
+      if (!medicine) {
+        return reply.status(404).send({ message: 'Medicine not found.' })
+      }
+
       return reply.status(200).send({ medicine })
     } catch (error) {
       console.error(error)
@@ -62,12 +66,12 @@ export async function medicinesRoutes(app: FastifyInstance) {
       medicineCategory,
       medicineName,
       medicineDate,
-      medicineRepeatData
+      medicineRepeatDate
     } = z.object({
       medicineCategory: z.string(),
       medicineName: z.string(),
       medicineDate: z.string(),
-      medicineRepeatData: z.string()
+      medicineRepeatDate: z.string()
     }).parse(request.body)
 
     try {
@@ -86,7 +90,7 @@ export async function medicinesRoutes(app: FastifyInstance) {
           medicineCategory,
           medicineName,
           medicineDate: new Date(medicineDate),
-          medicineRepeatDate: new Date(medicineRepeatData),
+          medicineRepeatDate: new Date(medicineRepeatDate),
           petId
         }
       })
