@@ -4,7 +4,6 @@ CREATE TABLE `users` (
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
-    `type` ENUM('USER', 'VET') NOT NULL,
 
     UNIQUE INDEX `users_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -26,8 +25,8 @@ CREATE TABLE `pets` (
 -- CreateTable
 CREATE TABLE `vaccines` (
     `id` VARCHAR(191) NOT NULL,
+    `vaccineCategory` VARCHAR(191) NOT NULL,
     `vaccineName` VARCHAR(191) NOT NULL,
-    `vetName` VARCHAR(191) NOT NULL,
     `vaccineDate` DATETIME(3) NOT NULL,
     `vaccineRepeatDate` DATETIME(3) NOT NULL,
     `petId` VARCHAR(191) NOT NULL,

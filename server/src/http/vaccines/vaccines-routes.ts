@@ -63,13 +63,13 @@ export async function vaccinesRoutes(app: FastifyInstance) {
     }).parse(request.params)
 
     const {
+      vaccineCategory,
       vaccineName,
-      vetName,
       vaccineDate,
       vaccineRepeatDate
     } = z.object({
+      vaccineCategory: z.string(),
       vaccineName: z.string(),
-      vetName: z.string(),
       vaccineDate: z.string(),
       vaccineRepeatDate: z.string()
     }).parse(request.body)
@@ -87,8 +87,8 @@ export async function vaccinesRoutes(app: FastifyInstance) {
 
       const vaccine = await prisma.vaccines.create({
         data: {
+          vaccineCategory,
           vaccineName,
-          vetName,
           vaccineDate: new Date(vaccineDate),
           vaccineRepeatDate: new Date(vaccineRepeatDate),
           petId
@@ -107,13 +107,13 @@ export async function vaccinesRoutes(app: FastifyInstance) {
     }).parse(request.params)
 
     const {
+      vaccineCategory,
       vaccineName,
-      vetName,
       vaccineDate,
       vaccineRepeatDate
     } = z.object({
+      vaccineCategory: z.string(),
       vaccineName: z.string(),
-      vetName: z.string(),
       vaccineDate: z.string(),
       vaccineRepeatDate: z.string()
     }).parse(request.body)
@@ -134,8 +134,8 @@ export async function vaccinesRoutes(app: FastifyInstance) {
           id: vaccineId
         },
         data: {
+          vaccineCategory,
           vaccineName,
-          vetName,
           vaccineDate,
           vaccineRepeatDate
         }

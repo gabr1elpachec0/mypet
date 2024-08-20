@@ -5,11 +5,6 @@ import { prisma } from "../../lib/prisma"
 import { generateJWTToken } from "../../utils/jwt"
 
 export async function userRoutes(app: FastifyInstance) {
-  enum UserType {
-    USER = 'USER',
-    VET = 'VET'
-  }
-
   app.get('/users/:userId', async (request, reply) => {
     const { userId } = z.object({ userId: z.string().uuid() }).parse(request.params)
 
@@ -31,11 +26,10 @@ export async function userRoutes(app: FastifyInstance) {
   })
 
   app.post('/users/signup', async (request, reply) => {
-    const { name, email, password, type } = z.object({
+    const { name, email, password } = z.object({
       name: z.string(),
       email: z.string().email(),
       password: z.string(),
-      type: z.enum([UserType.USER, UserType.VET])
     }).parse(request.body)
 
     const hash = await bcrypt.hash(password, 10)
@@ -56,7 +50,6 @@ export async function userRoutes(app: FastifyInstance) {
           name,
           email,
           password: hash,
-          type
         }
       })
 
@@ -89,7 +82,7 @@ export async function userRoutes(app: FastifyInstance) {
         return reply.status(401).send({ error: 'Invalid credentials.' })
       }
 
-      const token = generateJWTToken(user.id, 'USER')
+      const token = generateJWTToken(user.id)
 
       return reply.send({ token })
     } catch (e) {
@@ -99,11 +92,10 @@ export async function userRoutes(app: FastifyInstance) {
 
   app.put("/users/:userId", async (request, reply) => {
     const { userId } = z.object({ userId: z.string().uuid() }).parse(request.params)
-    const { name, email, password, type } = z.object({
+    const { name, email, password } = z.object({
       name: z.string(),
       email: z.string().email(),
       password: z.string(),
-      type: z.enum([UserType.USER, UserType.VET])
     }).parse(request.body)
 
     try {
@@ -127,7 +119,6 @@ export async function userRoutes(app: FastifyInstance) {
           name,
           email,
           password: hash,
-          type
         }
       })
 

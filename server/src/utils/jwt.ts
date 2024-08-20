@@ -1,14 +1,11 @@
 import jwt from 'jsonwebtoken'
 
-export function generateJWTToken(userId, userType) {
-  const payload = {
-    userId,
-    userType
-  }
+export function generateJWTToken(userId) {
+  const payload = { userId }
 
   const secret = process.env.SECRET
 
-  const token = jwt.sign(payload, secret, { expiresIn: '1h' })
+  const token = jwt.sign(payload, secret, { expiresIn: '24h' })
 
   return token
 }
