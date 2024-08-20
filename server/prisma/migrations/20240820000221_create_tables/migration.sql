@@ -50,7 +50,7 @@ CREATE TABLE `medicines` (
 -- CreateTable
 CREATE TABLE `weights` (
     `id` VARCHAR(191) NOT NULL,
-    `weight` INTEGER NOT NULL,
+    `weight` DOUBLE NOT NULL,
     `weightDate` DATETIME(3) NOT NULL,
     `petId` VARCHAR(191) NOT NULL,
 
