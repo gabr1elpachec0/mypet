@@ -13,17 +13,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserType {
-  USER
-  VET
-}
-
 model User {
-  id       String   @id @default(uuid())
+  id       String @id @default(uuid())
   name     String
-  email    String   @unique
+  email    String @unique
   password String
-  type     UserType
 
   pets Pet[]
 
@@ -50,8 +44,8 @@ model Pet {
 
 model Vaccines {
   id                String   @id @default(uuid())
+  vaccineCategory   String
   vaccineName       String
-  vetName           String
   vaccineDate       DateTime
   vaccineRepeatDate DateTime
 
